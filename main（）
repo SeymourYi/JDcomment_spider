@@ -1,0 +1,47 @@
+from lib2to3.pgen2.token import COMMENT
+import re
+from urllib import request
+import webbrowser
+import requests
+import json
+
+
+# 新ID的替换,得到商品评论的URL
+def GETnewid(id):
+    url = "https://api.m.jd.com/?appid=item-v3&functionId=pc_club_productPageComments&client=pc&clientVersion=1.0.0&t=1683180267449&loginType=3&uuid=122270672.1683113673705651628141.1683113674.1683175502.1683180258.5&productId=10021620455713&score=0&sortType=5&page=0&pageSize=10&isShadowSku=0&fold=1"
+    comment_url = re.sub(r"productId=\d+", f"productId={id[0]}", url)
+    return comment_url
+
+
+# id的获取
+def GETid():
+    URL = "https://item.jd.com/10067935975686.html"  # https://item.jd.com/10067935975686.html
+    part = r"\d+"
+    id = re.findall(part, URL)
+    return id
+
+    # 评论的截取
+
+
+def GETcomment(comment_url):
+    k = requests.get(comment_url)
+    html_content = k.text
+    return html_content
+
+
+def GETfinsh(data):
+    json_data = json.loads(data)
+    comments = json_data["comments"]
+    for comment1 in comments:
+        content_value = comment1["content"]
+        print(content_value, "\n")
+
+    
+
+if __name__ == "__main__":
+    ID = GETid()
+
+    COMMENT = GETnewid(ID)
+
+    json_data = GETcomment(COMMENT)
+    GETfinsh(json_data)
