@@ -1,0 +1,37 @@
+from xml.dom.minidom import Element
+import requests
+import re
+from bs4 import BeautifulSoup
+
+
+def GetNovel_href(a):
+    rsp = requests.get(a)
+    soup = BeautifulSoup(rsp.content, "html.parser")
+    elements = soup.select("div[class='chapter-list']")
+    href_list = []
+    for element in elements:
+        a_tags = element.select("a")
+    for a_tag in a_tags:
+        href = a_tag["href"]
+        href_list.append(href)
+    return href_list
+
+
+def GetNovel_content(wwws):
+    i = 1
+    for www in wwws:
+        rsp = requests.get(www)
+        soup = BeautifulSoup(rsp.content, "html.parser")
+        tags = soup.find_all(
+            lambda tag: tag.name in ["h2", "p"] and not tag.find_all(), string=True
+        )
+        text = [tag.get_text().strip() for tag in tags]
+        i += 1
+        with open(f"D:\\123\\3\\小说\\第{i-1}章.txt", "w") as f:
+            f.write("\n".join(text))
+
+
+if __name__ == "__main__":
+    url = "https://book.zhulang.com/399241/"
+    href = GetNovel_href(url)
+    GetNovel_content(href) 
