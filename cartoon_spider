@@ -1,0 +1,19 @@
+import requests
+import re
+from bs4 import BeautifulSoup
+
+url = "https://www.mhua5.com/chapter-1832154.html"    #需要爬取的网页
+rsp = requests.get(url)
+soup = BeautifulSoup(rsp.content, "html.parser")
+divs = soup.select("div", {"class": "rd-article__pic hide"})
+for i in range(1000):
+    for img in divs:
+        div = img.select("div", {"class": "lazy-read"})
+        div_tags = soup.find_all("div", {"class": "rd-article__pic"})
+        for div in div_tags:
+            data_original = div.img.get("data-original")
+            if data_original and "http" in data_original:
+                i += 1
+                qq = requests.get(data_original)
+                with open(f"D:\\123\\3\\987{i}.jpg", "wb") as f:   #文件夹位置，克自行选择
+                    f.write(qq.content)
